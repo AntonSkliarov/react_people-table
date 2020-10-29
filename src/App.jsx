@@ -1,11 +1,10 @@
 import React from 'react';
 
 import './App.scss';
+import { PeopleList } from './components/PeopleList';
 
 const App = () => (
-  <div className="App">
-    <h1>People table</h1>
-  </div>
+  <PeopleList />
 );
 
 export default App;
