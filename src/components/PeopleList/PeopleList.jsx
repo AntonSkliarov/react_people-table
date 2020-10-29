@@ -3,7 +3,7 @@ import peopleList from '../../api/people.json';
 import './PeopleList.scss';
 
 function sortPeopleByColumn(people, columnKey) {
-  people.sort((prevPerson, nextPerson) => {
+  return people.sort((prevPerson, nextPerson) => {
     if (typeof prevPerson[columnKey] === 'string') {
       return prevPerson[columnKey].localeCompare(nextPerson[columnKey]);
     }
