@@ -28,18 +28,17 @@ export class PeopleList extends React.Component {
 
   state = {
     sortedBy: null,
-    sortedPeople: peopleList,
   };
 
   sortPeople(columnKey) {
     this.setState({
       sortedBy: columnKey,
-      sortedPeople: sortPeopleByColumn([...this.people], columnKey),
     });
   }
 
   render() {
-    const { sortedBy, sortedPeople } = this.state;
+    const { sortedBy } = this.state;
+    const sortedPeople = sortPeopleByColumn([...this.people], sortedBy);
 
     return (
       <div className="people-table-wrapper">
