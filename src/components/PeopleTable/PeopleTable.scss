@@ -1,0 +1,13 @@
+.table {
+  margin: 0 auto;
+  max-width: 1024px;
+
+  .people-table-head {
+    text-transform: capitalize;
+    cursor: pointer;
+
+    &.active::after {
+      content: "👇🏽";
+    }
+  }
+}
