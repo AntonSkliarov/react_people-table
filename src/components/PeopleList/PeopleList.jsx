@@ -3,7 +3,7 @@ import peopleList from '../../api/people.json';
 import './PeopleList.scss';
 
 function sortPeopleByColumn(people, columnKey) {
-  people.sort((prevPerson, nextPerson) => {
+  return people.sort((prevPerson, nextPerson) => {
     if (typeof prevPerson[columnKey] === 'string') {
       return prevPerson[columnKey].localeCompare(nextPerson[columnKey]);
     }
@@ -28,7 +28,18 @@ export class PeopleList extends React.Component {
 
   state = {
     sortedBy: null,
+    sortedPeople: this.people,
   };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.sortedBy !== this.state.sortedBy) {
+      // NOTE: disable because allowed to use inside condition
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState(({ sortedBy }) => ({
+        sortedPeople: sortPeopleByColumn(this.people, sortedBy),
+      }));
+    }
+  }
 
   sortPeople(columnKey) {
     this.setState({
@@ -37,8 +48,7 @@ export class PeopleList extends React.Component {
   }
 
   render() {
-    const { sortedBy } = this.state;
-    const sortedPeople = sortPeopleByColumn([...this.people], sortedBy);
+    const { sortedBy, sortedPeople } = this.state;
 
     return (
       <div className="people-table-wrapper">
