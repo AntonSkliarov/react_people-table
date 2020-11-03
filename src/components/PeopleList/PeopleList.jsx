@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import peopleList from '../../api/people.json';
 import './PeopleList.scss';
@@ -16,6 +17,48 @@ function sortPeopleByColumn(people, columnKey) {
   });
 }
 
+function makePersonSlug(person) {
+  return `${person.name.replace(' ', '-')}-${person.born}`.toLowerCase();
+}
+
+function requiredValidator(name, value) {
+  return value
+    ? null
+    : `Field ${name} is required`;
+}
+
+function minLengthValidator(name, value) {
+  return value.length >= 3
+    ? null
+    : `Field ${name} should have at least 3 symbols`;
+}
+
+function validateNewPerson(newPerson) {
+  const errorsEntries = Object.entries(newPerson).map(([name, value]) => {
+    let error = requiredValidator(name, value);
+
+    if (!error && name === 'name') {
+      error = minLengthValidator(name, value);
+    }
+
+    return [name, error];
+  });
+
+  const hasErrors = errorsEntries.some(([, error]) => !!error);
+
+  const errors = errorsEntries.reduce((acc, [name, error]) => {
+    return {
+      ...acc,
+      [name]: error,
+    };
+  }, {});
+
+  return {
+    errors,
+    hasErrors,
+  };
+}
+
 const tableColumns = [
   'name',
   'sex',
@@ -23,23 +66,92 @@ const tableColumns = [
   'died',
 ];
 
-export class PeopleList extends React.Component {
-  people = peopleList;
+const NEW_PERSON = tableColumns.reduce((acc, name) => {
+  return {
+    ...acc,
+    [name]: '',
+  };
+}, {});
 
+const NEW_PERSON_ERRORS = tableColumns.reduce((acc, name) => {
+  return {
+    ...acc,
+    [name]: null,
+  };
+}, {});
+
+export class PeopleList extends React.Component {
   state = {
+    people: peopleList,
     sortedBy: null,
-    sortedPeople: this.people,
+    sortedPeople: peopleList,
+    newPerson: NEW_PERSON,
+    newPersonErrors: NEW_PERSON_ERRORS,
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.sortedBy !== this.state.sortedBy) {
+    if (
+      prevState.sortedBy !== this.state.sortedBy
+      || prevState.people !== this.state.people
+    ) {
       // NOTE: disable because allowed to use inside condition
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState(({ sortedBy }) => ({
-        sortedPeople: sortPeopleByColumn(this.people, sortedBy),
+      this.setState(({ sortedBy, people }) => ({
+        sortedPeople: sortPeopleByColumn(people, sortedBy),
       }));
     }
   }
+
+  handleChange = ({ target }) => {
+    this.setState(prevState => ({
+      newPerson: {
+        ...prevState.newPerson,
+        [target.name]: target.value,
+      },
+    }));
+  };
+
+  setDefaultNewPerson = () => {
+    this.setState({
+      newPerson: {
+        name: 'Bob Smith',
+        sex: 'm',
+        born: 2000,
+        died: 2020,
+      },
+    });
+  };
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+
+    this.setState(prevState => {
+      const {
+        errors,
+        hasErrors,
+      } = validateNewPerson(prevState.newPerson);
+
+      if (hasErrors) {
+        return {
+          newPersonErrors: errors,
+        };
+      }
+
+      return {
+        newPersonErrors: errors,
+        people: [
+          ...prevState.people,
+          {
+            ...prevState.newPerson,
+            born: Number(prevState.newPerson.born),
+            died: Number(prevState.newPerson.died),
+            slug: makePersonSlug(prevState.newPerson),
+          },
+        ],
+        newPerson: NEW_PERSON,
+      };
+    });
+  };
 
   sortPeople(columnKey) {
     this.setState({
@@ -48,10 +160,15 @@ export class PeopleList extends React.Component {
   }
 
   render() {
-    const { sortedBy, sortedPeople } = this.state;
+    const {
+      sortedBy,
+      sortedPeople,
+      newPerson,
+      newPersonErrors,
+    } = this.state;
 
     return (
-      <div className="people-table-wrapper">
+      <div className="people">
         <table className="ui celled table">
           <thead>
             <tr>
@@ -77,6 +194,78 @@ export class PeopleList extends React.Component {
             ))}
           </tbody>
         </table>
+
+        <form onSubmit={this.handleSubmit} className="ui form" name="newPerson">
+          <label className={`field ${newPersonErrors.name ? 'error' : ''}`}>
+            Name
+            <input
+              type="text"
+              name="name"
+              value={newPerson.name}
+              onChange={this.handleChange}
+            />
+            {newPersonErrors.name && (
+              <label>{newPersonErrors.name}</label>
+            )}
+          </label>
+
+          <label className={`field ${newPersonErrors.sex ? 'error' : ''}`}>
+            Sex
+            <select
+              name="sex"
+              value={newPerson.sex}
+              onChange={this.handleChange}
+            >
+              <option disabled value="">Select sex...</option>
+              <option value="f">Female</option>
+              <option value="m">Male</option>
+            </select>
+            {newPersonErrors.sex && (
+              <label>{newPersonErrors.sex}</label>
+            )}
+          </label>
+
+          <label className={`field ${newPersonErrors.born ? 'error' : ''}`}>
+            Born
+            <input
+              type="number"
+              name="born"
+              value={newPerson.born}
+              onChange={this.handleChange}
+            />
+            {newPersonErrors.born && (
+              <label>{newPersonErrors.born}</label>
+            )}
+          </label>
+
+          <label className={`field ${newPersonErrors.died ? 'error' : ''}`}>
+            Died
+            <input
+              type="number"
+              name="died"
+              value={newPerson.died}
+              onChange={this.handleChange}
+            />
+            {newPersonErrors.died && (
+              <label>{newPersonErrors.died}</label>
+            )}
+          </label>
+
+          <button
+            type="button"
+            className="ui button"
+            onClick={this.setDefaultNewPerson}
+          >
+            Set Default
+          </button>
+
+          <button
+            className="ui button primary"
+            type="submit"
+          >
+            Add person
+          </button>
+        </form>
       </div>
     );
   }

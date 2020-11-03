@@ -1,4 +1,6 @@
-.people-table-wrapper {
+.people {
+  display: grid;
+  grid-template-columns: 1fr 300px;
   padding: 40px;
 
   .table {
