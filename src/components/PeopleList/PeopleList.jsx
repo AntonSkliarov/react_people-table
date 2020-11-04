@@ -196,23 +196,25 @@ export class PeopleList extends React.Component {
         </table>
 
         <form onSubmit={this.handleSubmit} className="ui form" name="newPerson">
-          <label className={`field ${newPersonErrors.name ? 'error' : ''}`}>
-            Name
+          <div className={`field ${newPersonErrors.name ? 'error' : ''}`}>
+            <label htmlFor="name">Name</label>
             <input
               type="text"
               name="name"
+              id="name"
               value={newPerson.name}
               onChange={this.handleChange}
             />
             {newPersonErrors.name && (
               <label>{newPersonErrors.name}</label>
             )}
-          </label>
+          </div>
 
-          <label className={`field ${newPersonErrors.sex ? 'error' : ''}`}>
-            Sex
+          <div className={`field ${newPersonErrors.sex ? 'error' : ''}`}>
+            <label htmlFor="sex">Sex</label>
             <select
               name="sex"
+              id="sex"
               value={newPerson.sex}
               onChange={this.handleChange}
             >
@@ -223,48 +225,53 @@ export class PeopleList extends React.Component {
             {newPersonErrors.sex && (
               <label>{newPersonErrors.sex}</label>
             )}
-          </label>
+          </div>
 
-          <label className={`field ${newPersonErrors.born ? 'error' : ''}`}>
-            Born
+          <div className={`field ${newPersonErrors.born ? 'error' : ''}`}>
+            <label htmlFor="born">Born</label>
             <input
               type="number"
               name="born"
+              id="born"
               value={newPerson.born}
               onChange={this.handleChange}
             />
             {newPersonErrors.born && (
               <label>{newPersonErrors.born}</label>
             )}
-          </label>
+          </div>
 
-          <label className={`field ${newPersonErrors.died ? 'error' : ''}`}>
-            Died
+          <div className={`field ${newPersonErrors.died ? 'error' : ''}`}>
+            <label htmlFor="died">Died</label>
             <input
               type="number"
               name="died"
+              id="died"
               value={newPerson.died}
               onChange={this.handleChange}
             />
             {newPersonErrors.died && (
               <label>{newPersonErrors.died}</label>
             )}
-          </label>
+          </div>
 
-          <button
-            type="button"
-            className="ui button"
-            onClick={this.setDefaultNewPerson}
-          >
-            Set Default
-          </button>
+          <div style={{ display: 'flex' }}>
+            <button
+              style={{ order: 1 }}
+              className="ui button primary"
+              type="submit"
+            >
+              Add person
+            </button>
 
-          <button
-            className="ui button primary"
-            type="submit"
-          >
-            Add person
-          </button>
+            <button
+              type="button"
+              className="ui button"
+              onClick={this.setDefaultNewPerson}
+            >
+              Fill example
+            </button>
+          </div>
         </form>
       </div>
     );
