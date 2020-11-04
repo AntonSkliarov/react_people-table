@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import peopleList from '../../api/people.json';
-import './PeopleList.scss';
+import './People.scss';
 
 function sortPeopleByColumn(people, columnKey) {
   return people.sort((prevPerson, nextPerson) => {
@@ -80,7 +80,7 @@ const NEW_PERSON_ERRORS = tableColumns.reduce((acc, name) => {
   };
 }, {});
 
-export class PeopleList extends React.Component {
+export class People extends React.Component {
   state = {
     people: peopleList,
     sortedBy: null,
